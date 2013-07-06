@@ -17,7 +17,7 @@ class Downloader(Thread):
 					pending.truncate(0)	
 					pending.close()
 					for video in queue:
-						download = Popen(['youtube-dl',video, '-o', re.escape('/volume1/Videos/%(title)s')])
+						download = Popen(['youtube-dl',video, '-o', "/volume1/Videos/%(title)s.%(ext)s"])
 						while(download.poll() is None and patience > 0):
 							time.sleep(3)
 							patience -= 1

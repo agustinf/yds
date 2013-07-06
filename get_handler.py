@@ -25,7 +25,7 @@ class GetHandler(BaseHTTPRequestHandler):
 		if (video):
 			p = Popen(['youtube-dl',video])
 			self.wfile.write("will download "+video)
-			while(not Popen.poll(p)):
+			while(p.poll() is None):
 				time.sleep(1)
 			os.system('chown agustin:users *.mp4')
 			os.system('mv *.mp4 /volume1/Videos/')

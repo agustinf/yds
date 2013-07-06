@@ -1,6 +1,7 @@
 from threading import *
 import time
 from subprocess import Popen
+import re
 
 class Downloader(Thread):
 	run = True
@@ -8,13 +9,18 @@ class Downloader(Thread):
 	#	try:
 			while(self.run):
 				try:
+					queue = []
+					patience = 2000
 					pending = open("pending.txt","r+")
 					for video in pending:
-						download = Popen(['youtube-dl',video])
+						queue.append(video)
 					pending.truncate(0)	
 					pending.close()
-					Popen(['chmod','agustin:users','*.mp4'])
-					Popen(['mv','*.mp4','/volume1/Videos/'])
+					for video in queue:
+						download = Popen(['youtube-dl',video, '-o', re.escape('/volume1/Videos/%(title)s')])
+						while(download.poll() is None and patience > 0)
+							time.sleep(3)
+							patience -= 1
 				except:
 					print "No pending.txt file found, or other unknown error, sleeping 20 secs"
 					time.sleep(15)

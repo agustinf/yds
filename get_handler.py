@@ -1,7 +1,8 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
-import os
+from subprocess import Popen
 import urlparse
 import url_validator
+import time
 
 class GetHandler(BaseHTTPRequestHandler):
 
@@ -13,18 +14,21 @@ class GetHandler(BaseHTTPRequestHandler):
 		self.wfile.write(message)
 		return
 	def do_POST(self):
-		execute = None
+		video = None
 		length = int(self.headers['Content-Length'])
 		post_data = urlparse.parse_qs(self.rfile.read(length).decode('utf-8'))
 		for key, value in post_data.iteritems():
 			if(key=="url" and value[0] and url_validator.validate(value[0])):
-				execute = 'youtube-dl ' + value[0]
+				video = value[0]
 		self.send_response(200)
 		self.end_headers()
-		if (execute):
-			os.system(execute)
-			os.system('mv *.mp4 /@volume1/')
-			self.wfile.write("executed " + execute)
+		if (video):
+			p = Popen(['youtube-dl',video])
+			self.wfile.write("will download "+video)
+			while(not p.poll()):
+				time.sleep(1)
+			os.system('chown agustin:users *.mp4')
+			os.system('mv *.mp4 /volume1/Videos/')
 		else:
 			self.wfile.write("error")
 		return

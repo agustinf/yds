@@ -1,5 +1,4 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
-from subprocess import Popen, PIPE
 import urlparse
 import url_validator
 import time
@@ -26,9 +25,10 @@ class GetHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			self.wfile.write("will download "+video)
 			self.wfile.flush()
-			download = Popen(['youtube-dl',video], stdout=PIPE)
-			chown = Popen(['chown',' agustin:users'], stdin=download.stdout, stdout=PIPE)
-			move = Popen(['xargs','-0','-I','{}','mv','{}','/volume1/Videos/'],stdin=chown.stdout)
+			job = open("pending.txt","a")
+			job.write(video + "\n")
+			job.close()
+			#download = Popen(['youtube-dl',video], stdout=PIPE)
 		else:
 			self.wfile.write("error")
 		return
